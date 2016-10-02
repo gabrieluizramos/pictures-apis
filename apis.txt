@@ -1,0 +1,30 @@
+APIS{
+	INSTAGRAM{
+	REPO
+	https://gist.github.com/bradwestfall/f5a010e96fb0c4d18556
+	USER ID
+	http://www.pinceladasdaweb.com.br/instagram/user-id/
+	http://jelled.com/instagram/lookup-user-id#
+	https://api.instagram.com/v1/users/search?q=[ USER NAME ]&client_id=[ YOU APP Client ID ]
+	https://api.instagram.com/v1/users/search?q=[USERNAME]&access_token=[ACCESS TOKEN]
+	token intagram
+	https://www.instagram.com/developer/authentication/
+	gerar access token
+	http://instagram.pixelunion.net/
+	SANDBOX
+	https://www.instagram.com/developer/sandbox/
+	}
+	FLICKR{
+		exemplo
+		https://www.flickr.com/services/api/explore/flickr.people.getPhotos
+		credenciais
+		https://www.flickr.com/services/apps/create/noncommercial/?
+	}
+	500px{
+	repo
+	https://github.com/500px/500px-js-sdk
+	settings 
+	https://500px.com/settings/applications
+	}
+}
+

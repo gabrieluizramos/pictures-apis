@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		[data-template]{
+			display: none
+		}
+	</style>
+</head>
+<body>
+	<section class="instagram" style="border-bottom:1px solid black">
+		<h1>instagram</h1>
+		<ul data-template="container">
+			<li data-template="item">
+				<a href="">
+					<img src="" alt=""> 
+				</a>
+			</li>
+		</ul>
+		<ul id="instafeed">
+		</ul>
+		<span style="color:red;" data-pagination="instagram">carregar mais instagram</span>
+	</section>
+	<section class="flickr" style="border-bottom:1px solid black">
+		<h1>flickr</h1>
+		<ul id="flickrfeed">
+		</ul>
+		<span style="color:red;" data-pagination="flickr">carregar mais flickr</span>
+	</section>
+	<section class="500px" style="border-bottom:1px solid black">
+		<h1>500px</h1>
+		<ul id="500pxfeed">
+		</ul>
+		<span style="color:red;" data-pagination="500px">carregar mais 500px</span>
+	</section>
+</section>
+<script src="js/jquery-2.2.4.min.js"></script>
+<script>
+	var templatePhoto = $( '[data-template="container"]' );
+</script>
+<!-- instagram -->
+<script src="js/instafeed.min.js"></script>
+<script>
+	var templateInstagram = templatePhoto.clone();
+	templateInstagram.find('[data-template="item"]').removeAttr( 'data-template' ).find( 'a' ).attr( 'href' , '{{image}}' ).find( 'img' ).attr( 'src' , '{{image}}');
+	templateInstagram = templateInstagram.html();
+	var feed = new Instafeed({
+		get: 'user',
+		userId: 407896670 ,
+		accessToken: '407896670.1677ed0.b06070773a464bea8069d1b284b8648c',
+		clientId: 'b78c496a824e44dfb46790568425e434',
+		resolution: 'standard_resolution',
+		template: templateInstagram,
+		limit: 3
+	});
+	feed.run();
+	$( '[data-pagination="instagram"]' ).on( 'click' , function(){
+		feed.next();
+	});
+</script>
+<!-- flickr -->
+<script>
+	var pageFlickr = 1;
+	function getFlickrPhotos(){
+		var flickrURL = 'https://api.flickr.com/services/rest/?method=flickr.people.getPhotos&api_key=a84413e1839b9b69144162c49cfaffc8&user_id=_feelix_&per_page=3&page='+ pageFlickr +'&format=json&nojsoncallback=1';
+		$.getJSON( flickrURL , function( data ){
+			console.log( data );
+			//var photoURL = 'http://farm' + item.farm + '.static.flickr.com/' + item.server + '/' + item.id + '_' + item.secret + '_m.jpg';
+			var flickrPhotos = [];
+			for (var i = 0; i < data.photos.photo.length; i++) {
+				var thumbPhotoURL = 'http://farm' + data.photos.photo[i].farm + '.static.flickr.com/' + data.photos.photo[i].server + '/' + data.photos.photo[i].id + '_' + data.photos.photo[i].secret + '_m.jpg';
+				var bigPhotoURL = 'http://farm' + data.photos.photo[i].farm + '.static.flickr.com/' + data.photos.photo[i].server + '/' + data.photos.photo[i].id + '_' + data.photos.photo[i].secret + '_b.jpg';
+				var templateFlickr = templatePhoto.clone();
+				templateFlickr.find('[data-template="item"]').removeAttr( 'data-template' ).find( 'a' ).attr( 'href' , bigPhotoURL ).find( 'img' ).attr( 'src' , thumbPhotoURL );
+				templateFlickr = templateFlickr.html();
+				flickrPhotos.push( templateFlickr );
+			}
+			$( '#flickrfeed' ).append( flickrPhotos );
+		});
+	}
+	getFlickrPhotos();
+	$( '[data-pagination="flickr"]' ).on( 'click' , function(){
+		pageFlickr++;
+		getFlickrPhotos();
+	});
+</script>
+<!-- 500px -->
+<script src="js/500px-sdk.js"></script>
+<script>
+	var perPage500px = 0;
+	_500px.init({
+		sdk_key: '6c105c15ef945f7e9a9dfa8f4945f062c0d3a9d4'
+	});
+	function get500pxPhotos(){
+		_500px.api( '/photos' , {
+			feature: 'user' ,
+			username: 'feelix' , 
+		} , 
+		function( response ){
+			if ( response.data.photos.length > perPage500px ) {
+				perPage500px = ( ( perPage500px + 3 ) > response.data.photos.length ) ? response.data.photos.length : perPage500px + 3 
+				var photos500px = [];
+				for (var i = ( perPage500px - 3 ); i < perPage500px; i++) {
+					var bigPhotoURL = 'https://500px.com' + response.data.photos[i].url;
+					var thumbPhotoURL = response.data.photos[i].image_url;
+					var template500px = templatePhoto.clone();
+					template500px.find('[data-template="item"]').removeAttr( 'data-template' ).find( 'a' ).attr( 'href' , bigPhotoURL ).find( 'img' ).attr( 'src' , thumbPhotoURL );
+					template500px = template500px.html();		
+					photos500px.push( template500px );	
+				}
+				$( '#500pxfeed' ).append( photos500px );
+			}
+		});
+	}
+	get500pxPhotos();
+	$( '[data-pagination="500px"]' ).on( 'click' , function(){
+		get500pxPhotos();
+	});
+</script>
+</body>
+</html>
